@@ -240,6 +240,7 @@ class CameraWidget:
         # cartesian co-ordinates in widget space are used during selection
         self.x0, self.y0 = None, None
         self.x1, self.y1 = None, None
+        self.cartesian_needs_update = False
         # polar co-ordinates from the image center are the canonical representation
         self.cr, self.ca = None, None
         self.w, self.h = None, None
@@ -354,12 +355,14 @@ class CameraWidget:
 
         if self.config.rotation_angle != values[self.gui_rotation_slider]:
             self.config.rotation_angle = int(values[self.gui_rotation_slider])
-            self._polar_to_cartesian()
             changed = True
+            self.cartesian_needs_update = True
 
         if self.config.gui_rotation_ui_padding != bool(values[self.gui_rotation_ui_padding]):
             self.config.gui_rotation_ui_padding = bool(values[self.gui_rotation_ui_padding])
             changed = True
+            self.cartesian_needs_update = True
+
 
         # if self.config.gui_circular_crop != values[self.gui_circular_crop]:
         #     self.config.gui_circular_crop = values[self.gui_circular_crop]
@@ -498,6 +501,9 @@ class CameraWidget:
                     self.clip_top = round((self.pad_h - self.clip_h)/2)
 
                     self.roi_image_center = (self.pad_w / 2, self.pad_h / 2)
+
+                    if self.cartesian_needs_update:
+                        self._polar_to_cartesian()
 
                     pad_matrix = np.float32([[1, 0, self.pad_left],
                                              [0, 1, self.pad_top],
