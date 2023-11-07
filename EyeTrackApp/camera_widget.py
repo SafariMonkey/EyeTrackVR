@@ -353,7 +353,7 @@ class CameraWidget:
                         self.config.capture_source = values[self.gui_camera_addr]
             changed = True
 
-        if self.config.rotation_angle != values[self.gui_rotation_slider]:
+        if self.config.rotation_angle != int(values[self.gui_rotation_slider]):
             self.config.rotation_angle = int(values[self.gui_rotation_slider])
             changed = True
             self.cartesian_needs_update = True
@@ -504,6 +504,7 @@ class CameraWidget:
 
                     if self.cartesian_needs_update:
                         self._polar_to_cartesian()
+                        self.cartesian_needs_update = False
 
                     pad_matrix = np.float32([[1, 0, self.pad_left],
                                              [0, 1, self.pad_top],
